@@ -9,6 +9,7 @@ export const unfollowDesumildes = async (session: Session) => {
   let cursor = "";
   let desumildes: Follow[] = [];
 
+  // HACK: This won't work if the user has too many follows
   while (true) {
     const followsData = await getFollows(session.did, {
       cursor,

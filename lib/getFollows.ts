@@ -34,6 +34,8 @@ export const getFollows = async (
   follows: Follow[];
 }> => {
   if (!actor) throw new Error("getFollowers - Actor is required");
+
+  // TODO: Check if it is possible to filter followers with query params
   const url = cursor
     ? `app.bsky.graph.getFollows?actor=${actor}&cursor=${cursor}`
     : `app.bsky.graph.getFollows?actor=${actor}`;

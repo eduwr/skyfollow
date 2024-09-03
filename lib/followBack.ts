@@ -7,6 +7,7 @@ export const followBack = async (session: Session) => {
   let cursor = "";
   let followersToFollow: Follower[] = [];
 
+  // HACK: This won't work if the user has too many followers
   while (true) {
     const followersData = await getFollowers(session.did, {
       cursor,

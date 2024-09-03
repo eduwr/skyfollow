@@ -1,56 +1,58 @@
 import { blueSkySocialAPI } from "./blueSkyAPI";
 
 export type Follower = {
-	did: string;
-	handle: string;
-	isFollowing: boolean;
+  did: string;
+  handle: string;
+  isFollowing: boolean;
 };
 
 export type GetFollowersResponse = {
-	cursor: string;
-	subject: {
-		did: string;
-		handle: string;
-	};
-	followers: {
-		did: string;
-		handle: string;
-		viewer: {
-			following?: string;
-		};
-	}[];
+  cursor: string;
+  subject: {
+    did: string;
+    handle: string;
+  };
+  followers: {
+    did: string;
+    handle: string;
+    viewer: {
+      following?: string;
+    };
+  }[];
 };
 
 type GetFollowersOptions = {
-	cursor?: string;
+  cursor?: string;
 };
 export const getFollowers = async (
-	actor: string,
-	{ cursor }: GetFollowersOptions,
+  actor: string,
+  { cursor }: GetFollowersOptions,
 ): Promise<{
-	cursor: string;
-	followers: Follower[];
+  cursor: string;
+  followers: Follower[];
 }> => {
-	if (!actor) throw new Error("getFollowers - Actor is required");
-	const url = cursor
-		? `app.bsky.graph.getFollowers?actor=${actor}&cursor=${cursor}`
-		: `app.bsky.graph.getFollowers?actor=${actor}`;
+  if (!actor) throw new Error("getFollowers - Actor is required");
 
-	const { data } = await blueSkySocialAPI.get<GetFollowersResponse>(url, {
-		headers: {
-			"Content-Type": "application/json",
-			Accept: "application/json",
-		},
-	});
+  // TODO: Check if it is possible to filter followers with query params
+  const url = cursor
+    ? `app.bsky.graph.getFollowers?actor=${actor}&cursor=${cursor}`
+    : `app.bsky.graph.getFollowers?actor=${actor}`;
 
-	const followers = data.followers.map((follower) => ({
-		did: follower.did,
-		handle: follower.handle,
-		isFollowing: !!follower.viewer.following,
-	}));
+  const { data } = await blueSkySocialAPI.get<GetFollowersResponse>(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
 
-	return {
-		followers,
-		cursor: data.cursor,
-	};
+  const followers = data.followers.map((follower) => ({
+    did: follower.did,
+    handle: follower.handle,
+    isFollowing: !!follower.viewer.following,
+  }));
+
+  return {
+    followers,
+    cursor: data.cursor,
+  };
 };
